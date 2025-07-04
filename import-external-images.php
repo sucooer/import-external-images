@@ -102,9 +102,20 @@ function render_import_external_images_page() {
         <label><input type="checkbox" id="select-all"> 全选</label><br><br>';
 
     foreach ($posts as $post) {
+        // 统计外链图片数量
+        $content = $post->post_content;
+        $external_img_count = 0;
+        if (preg_match_all('/<img[^>]+src=["\'](https?:\/\/[^"\']+)["\']/', $content, $matches)) {
+            $urls = array_unique($matches[1]);
+            foreach ($urls as $url) {
+                if (strpos($url, home_url()) === false) {
+                    $external_img_count++;
+                }
+            }
+        }
         echo '<label style="display:block; margin-bottom:5px;">
                 <input type="checkbox" name="post_ids[]" value="' . $post->ID . '">
-                ' . esc_html($post->post_title) . ' (ID: ' . $post->ID . ')
+                ' . esc_html($post->post_title) . ' (ID: ' . $post->ID . ', 外链图片: ' . $external_img_count . ')
               </label>';
     }
 
